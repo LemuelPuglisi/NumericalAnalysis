@@ -3,7 +3,7 @@ Course of Numerical Analysis @ UniCT / DMI, 2022
 
 | Argomenti             | Studiati |
 | --------------------- | :------: |
-| Teoria degli errori   |    ❌     |
+| Teoria degli errori   |    ✅     |
 | Matrici               |    ❌     |
 | Sistemi Lineari       |    ❌     |
 | Interpolazione        |    ❌     |
