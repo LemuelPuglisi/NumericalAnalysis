@@ -77,6 +77,36 @@ Il metodo potrebbe iterare all'infinito, per cui bisogna stabilire un **criterio
 
 
 
+### Esempio: Metodo di Gauss
+
+Nel caso di un sistema lineare, il numero caratteristico del problema è il numero di equazioni del sistema che, in un sistema con matrice dei coefficienti quadrata, è uguale al numero delle incognite $n$. Nel caso del metodo di Gauss, che esamineremo più avanti, la complessità computazionale è $\frac 4 3 n^3$. 
+
+
+
+### Esempio: Schema di Horner 
+
+Lo schema di Horner serve ad abbassare il costo computazionale del calcolo di un polinomio. Si vuole eseguire il calcolo di: 
+$$
+p(x) = ax^3 +bx^2 + cx + d 
+$$
+Sono necessarie 3 somme e 6 moltiplicazioni per un totale di 9 operazioni floating point (flops). In generale, per calcolare: 
+$$
+p(x) = a_nx^n + a_{n-1}x^{n-1} + \dots + a_1 x + a_0
+$$
+Occorrono $n$ somme ed $\frac{n(n+1)}{2}$ moltiplicazioni, per un totale di 
+$$
+n + \frac{n(n+1)}{n} = \frac{n(n+3)}{n} \sim n^2 \text{ flopls}
+$$
+Se invece si applica lo **schema di Horner**: 
+$$
+p(x) = a_0 + x(a_1 + x( a_2 + x( \dots a_{n-1} + xa_n ) \dots))
+$$
+Otteniamo $n$ somme ed $n$ moltiplicazioni per un totale di $2n$ flops. 
+
+
+
+
+
 ## Sistemi di numerazione
 
 I sistemi di rappresentazione numerica sono posizionali, ovvero ogni cifra occupa una posizione corrispondente ad una potenza della base del sistema adottato. Una fonte di errore è data dal passaggio da un sistema di numerazione all'altro. Scelta una base $b$, ogni reale $a \in \R$ può essere scritto come 
@@ -197,5 +227,120 @@ Utilizzando il rounding, l'errore assoluto più grande ottenibile è $b^{e-t+1}/
 
 ### Aritmetica Standard IEEE
 
-> PAG. 15
+| Bits |               Numeri               | Epsilon Macchina |              Range               |
+| :--: | :--------------------------------: | :--------------: | :------------------------------: |
+|  32  | $(-1)^s\cdot 2^{e-127}\cdot(1+m)$  |    $2^{-24}$     |  ${2^{-126} \le x \le 2^{128}}$  |
+|  64  | $(-1)^s\cdot 2^{e-1023}\cdot(1+m)$ |    $2^{-53}$     | ${2^{-1022} \le x \le 2^{1023}}$ |
+
+
+
+### Wobbling precision
+
+I numeri in floating point non sono equispaziati, ma si addensano in prossimità del più piccolo numero rappresentabile. All'interno dell'intervallo $[b^e, b^{e+1}]$ i punti sono equispaziati e la loro distanza è $b^{e-t}$. Ogni volta che si diminuisce o aumenta l'esponente $e$, diminuisce o aumenta la spaziatura. Il fenomeno è detto **wobbling precision** ed ha un andamento oscillatorio
+
+
+
+## Condizionamento e stabilità
+
+> **Def.** Consideriamo il problema: trovare $x$ tale che $F(x)=d$, dove $d$ è il dato (o i dati) da cui dipende la soluzione $x$ ed $F$ è la relazione funzionale che lega $x$ e $d$​. Diremo che tale problema è **ben posto**, se per un certo dato, la soluzione esiste, è unica e dipende con continuità dai dati. 
+
+
+
+L'unicità e l'esistenza della soluzione sono problemi analitici, mentre la dipendenza è un problema numerico. La dipendenza continua dei dati significa che piccole perturbazioni dei dati danno luogo a piccole variazioni della soluzione, dove "piccolo" può essere inteso in senso relativo o assoluto. Nascono due problemi, ci si chiede: 
+
+1. Alterando i dati del problema, di quanto si altera la soluzione?
+2. Come si propagano gli errori?
+
+
+
+### Numero di condizionamento
+
+Il primo problema è connesso con la dipendenza continua dai dati della soluzione e può essere stimato con il **numero di condizionamento** del problema, numero che non dipende dall'uso dell'aritmetica finita del calcolatore, ma dal tipo di problema. 
+
+**Def.** Sia $\delta d$ la perturbazione applicata ai dati, che scatena una variazione $\delta x$ nella soluzione, quindi $d + \delta d \to x + \delta x$. Diremo $K$ **numero di condizionamento relativo** il valore ottenuto come segue: 
+$$
+K = \frac
+{{\left\lVert \delta x \right\rVert} / {\left\lVert x \right\rVert}}
+{{\left\lVert \delta d \right\rVert} / {\left\lVert d \right\rVert}}
+$$
+ Se $x=0, d=0$ si calcola $K_{ass}$ il **numero di condizionamento assoluto**: 
+$$
+K_{ass} = \frac 
+{{\left\lVert \delta x \right\rVert}} 
+{{\left\lVert \delta d \right\rVert}}
+$$
+
+
+Se $K$ è grande allora il problema è **mal condizionato**. Se un problema è ben posto ma $K$ è grande basta riformulare il problema. 
+
+
+
+### Propagazione dell'errore
+
+Il problema (2) dipende dalla stabilità dell'algoritmo. Ad ogni problema numerico si possono associare più algoritmi. 
+
+> Un algoritmo è stabile se la propagazione degli errori dovuti all'aritmetica di macchina è limitata. 
+
+Un algoritmo è più stabile di un altro se in esso l'influenza degli errori è minore. 
+
+
+
+#### Errori dovuti a operazioni aritmetiche
+
+In generale, i risultati di operazioni aritmetiche tra numeri macchina non sono numeri macchina. Indichiamo con $a \oplus b$ il valore reale di un calcolo, dove con $\oplus$ indichiamo una tra le 4 operazioni. Quando tale risultato non appartiene ai numeri macchina $F$, indichiamo la sua approssimazione con $fl(a \oplus b)$. Chiamiamo **round-off error** la differenza
+$$
+a \oplus b - fl(a \oplus b)
+$$
+Tale errore si può minimizzare con degli accorgimenti. 
+
+> **Esempio con somma.** Quando un calcolatore somma due numeri, porta il secondo numero allo stesso ordine del primo (stesso esponente) e somma la mantissa (da $m$ cifre) in un accumulatore da $2m$ cifre, dopodiché aggiusta l'esponente. Questo può portare alla non validità della proprietà commutativa, distributiva ed associativa della somma e della moltiplicazione. 
+>
+> **Esempio numerico.** Supponiamo $m=4$ e di voler eseguire la somma $\sum_{i=1}^{11}x_i$, dove $x_1 = 0.5055 \times 10^4$ e per $i=2, \dots, 11$ abbiamo $x_i = 0.4000 \times 10^0$. Nella prima somma avremo $x_1 + x_2$, quindi portiamo tutto all'ordine di $x_1$: $(0.5055 + 0.00004) \times 10^4$, ma essendo che la mantissa ha 4 cifre, la somma che viene calcolata è $(0.5055 + 0.0000) \times 10^4$ che rimane $x_1$. Questo non avviene calcolando prima la somma tra i termini $x_2, \dots, x_11$ e dopodiché $x_1$, quindi non vale la proprietà commutativa. Per minimizzare l'errore conviene sommare i numeri in base alla loro precisione, dal più piccolo al più grande (in valore assoluto). 
+
+Se $fl(a \oplus b)$ è arrotondato correttamente (rounding, come nel sistema IEEE), allora a meno di underflow o overflow si ha che: 
+$$
+fl(a \oplus b) = (a \oplus b)(1 + \delta) \hspace{1cm} 
+\text{con }|\delta|< \epsilon_M
+$$
+In realtà, per evitare errori dovuti ad underflow si aggiunge una piccolissima quantità ($10^{-45}$) che da luogo ad una "eccezione" che viene segnalata da un flag.
+
+
+
+#### Errori nelle 4 operazioni
+
+Consideriamo l'errore nella forma precedente, per l'errore assoluto si ha: 
+
+* **Somma algebrica**: $x_1(1+\epsilon_1) \pm x_2(1+\epsilon_2)$
+* **Prodotto**: $x_1(1+\epsilon_1) \cdot x_2(1+\epsilon_2)$
+* **Divisione**: $x_1(1+\epsilon_1) / x_2(1+\epsilon_2)$
+
+Per l'errore relativo si ha: 
+
+**Prodotto**: 
+$$
+\frac{x_1x_2 - x_1(1 + \epsilon_1) x_2(1+\epsilon_2)}{x_1x_2} =
+-\epsilon_1 -\epsilon_2 -\epsilon_1\epsilon_2 \approx -\epsilon_1 -\epsilon_2
+$$
+**Divisione**:
+$$
+\frac
+{\frac{x_1}{x_2}-\frac{x_1(1+\epsilon_1)}{x_2(1+\epsilon_2)}}
+{\frac{x_1}{x_2}} = 
+\frac{-\epsilon_1 + \epsilon_2}{1+ \epsilon_2} \approx 
+- \epsilon_1 + \epsilon_2
+$$
+**Somma algebrica**: 
+$$
+\frac
+{(x_1 \pm x_2) - [ x_1(1+\epsilon_1) + x_2(1+\epsilon_2) ]}
+{x_1 \pm x_2} = 
+\frac{-x_1\epsilon_1 - x_2\epsilon_2}{x_1 \pm x_2}
+$$
+Pertanto abbiamo che: 
+
+* La **sottrazione** va bene per l'errore assoluto, ma si ha un errore relativo grande se $x_1 \approx x_2$. 
+* Il **prodotto** va bene per l'errore relativo, l'errore assoluto dipende dall'ordine di grandezza dei fattori. 
+* La **divisione** va bene per l'errore relativo, l'errore assoluto è grande se $x_2 \approx 0$. 
+
+
 
