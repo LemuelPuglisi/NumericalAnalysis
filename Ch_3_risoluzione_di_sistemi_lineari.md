@@ -86,22 +86,6 @@ Si calcola il generico $x_i$
 $$
 x_i = \frac{b_i - \sum_{j=1}^{i-1} l_{ij} x_j}{l_{ii}}
 $$
-Il codice python è il seguente.
-
-```python
-def _forward_substitution(S: LinearSystem):
-    assert S.is_squared(), "Needs a squared linear system."
-    x = np.zeros(S.variables)
-    for i in range(S.equations):
-        tmp = S.b[i]
-        # Given the index i=3, the range returns the
-        # previous elements (j=0, j=1, j=2). When i=0,
-        # we should set range(0) that is empty.
-        for j in range( i if i - 1 >= 0 else 0 ): tmp -= S.A[i, j] * x[j]
-        x[i] = tmp / S.A[i, i]
-    return x
-```
-
 
 
 ### Metodo delle sostituzioni indietro
@@ -114,24 +98,6 @@ Si calcola il generico $x_i$
 $$
 x_i = \frac{b_i - \sum_{j=i+1}^{n} u_{ij} x_j}{u_{ii}}
 $$
-Il codice python è il seguente: 
-
-```python
-def _backward_substitution(S: LinearSystem):
-    assert S.is_squared(), "Needs a squared linear system."
-    n = S.equations
-    x = np.zeros(S.variables)
-    for i in reversed(range(n)):
-        tmp = S.b[i]
-        # The row iterations are reversed, so we start from
-        # the bottom of the matrix. We should also iterate
-        # the columns in a reversed manner (recall we need
-        # to compute the solution components in a give order).
-        for j in range(n-1, i, -1): tmp -= S.A[i, j] * x[j]
-        x[i] = tmp / S.A[i, i]
-    return x
-```
-
 
 
 ### Complessità metodi di sostituzione e considerazioni
@@ -154,21 +120,7 @@ m_{ji}^{(i)} = - \frac{a_{ji}}{a_{ii}} \hspace{1cm} j = i+1, \dots, n
 $$
 E si aggiunge l'$i$-esima equazione alle successive moltiplicata per il rispettivo moltiplicatore. Al passo $n-1$ si ottiene un sistema triangolare superiore che può essere risolto con la sostituzione all'indietro. Il costo computazionale del metodo è circa $\frac 4 3n^3$. 
 
-Affinché il metodo funzioni è necessario che gli elementi della diagonale $a_{ii}$ siano non nulli ad ogni iterazione. Questo è garantito se tutti i minori principali di $A$ sono non nulli. Di fatti, è possibile effettuare un check tramite codice come segue:   
-
-```python
-def can_apply_gem(A: np.ndarray):
-    """ If all the principal minors of the matrix
-        have a non-zero determinant, all the diagonals
-        elements will be non-zero during the Gaussian
-        elimination method.
-    """
-    pms = mx.get_matrix_principal_minors(A)
-    for pm in pms:
-        if mx.determinant(pm) == 0:
-            return False
-    return True
-```
+Affinché il metodo funzioni è necessario che gli elementi della diagonale $a_{ii}$ siano non nulli ad ogni iterazione. Questo è garantito se tutti i minori principali di $A$ sono non nulli. 
 
 
 
@@ -245,49 +197,6 @@ Questo poiché con il passo (1) si trova $y=L^{-1}b$, mentre con il passo 2 si t
 
 Non sempre esiste una fattorizzazione LU della matrice. Condizione necessaria di esistenza è che la matrice sia non degenere, quindi che abbia il determinante non nullo. Se vale tale condizione, allora esiste sicuramente una matrice di permutazione $P$ tale che $PA=LU$.  L'esistenza è garantita per le matrici **diagonalmente dominanti** e **simmetriche definite positive**, senza dover permutare la matrice. 
 
-La fattorizzazione è implementata nel seguente codice: 
-
-```python
-@is_matrix
-def LU(A: np.ndarray):
-    """ This function calculate the LU factorization of
-        the matrix A, moreover: A = L x U. A third value 
-        P is returned along with L and U: that's the permutation
-        matrix in order to reproduce the partial pivot operations. 
-        (You may want to apply those steps to a coefficient vector b
-        while solving a linear system, see function gem @ linearsystem.py)
-    """
-    assert determinant(A) != 0
-    n, _ = A.shape
-    Lt = P = generate_identity_matrix(n)    
-    U = A.copy()
-    for i in range(n-1):
-        Li = generate_identity_matrix(n)
-        for j in range(i+1, n): 
-            Li[j, i]  = - U[j, i] / U[i, i]              
-        U = np.matmul(Li, U)    
-        Lt = np.matmul(Li, Lt)
-    L = inverse(Lt)
-    # P is just an identity matrix (for now)
-    return L, U, P
-```
-
-Mentre la risoluzione con il metodo di Gauss è implementata come segue: 
-
-```python
-def gem_solve(S: LinearSystem):
-    """ Perform the Gaussian elimination method.
-    """
-    assert S.is_squared(), "Needs a squared linear system."
-    assert mx.determinant(S.A) != 0
-    # assert can_apply_gem(A)
-    L, U, P = mx.LU(S.A)
-    # b = np.matmul(P, b)
-    y =  _forward_substitution(LinearSystem(L, S.b))
-    x = _backward_substitution(LinearSystem(U, y))
-    return x
-```
-
 
 
 #### Matrici di permutazione
@@ -357,6 +266,165 @@ I seguenti metodi eliminano i gradi di liberta imponendo dei vincoli:
 I metodi di fattorizzazione modificano la matrice iniziale causando un effetto fill-in, ovvero gli zeri diventano elementi non nulli. Se la matrice è inizialmente sparsa, conviene optare per metodi iterativi. 
 
 
+
+### Metodo di Cholesky
+
+Sia $A \in \R^{n \times n}$ una matrice simmetrica ($A = A^T$) e definita positiva, allora esiste almeno una matrice $L$ triangolare inferiore tale che $A=LL^T$. Inoltre, se si impone che $l_{ii} > 0$ la fattorizzazione è unica. 
+
+**Dimostrazione (costruttiva)**. 
+
+Per il criterio di Sylvester, la matrice ha determinante strettamente positivo, e quindi esiste una fattorizzazione LU. Proviamo a costruire la fattorizzazione $U^TU$ come segue: 
+$$
+U^T U =
+\begin{bmatrix}
+u_{11} & & 0 \\
+\vdots & \ddots & \\
+u_{1n} & \dots & u_{nn}
+\end{bmatrix}
+\begin{bmatrix}
+u_{11} & \dots  & u_{1n} \\
+\vdots & \ddots & \\
+0 & \dots & u_{nn}
+\end{bmatrix}
+= 
+\begin{bmatrix}
+a_{11} & \dots  & a_{1n} \\
+\vdots & \ddots & \\
+a_{n1} & \dots & a_{nn}
+\end{bmatrix}
+= A
+$$
+Dato che le incognite sono gli elementi di $U$, che sono $n(n+1)/2$, possiamo strutturare $n^2$ equazioni (non lineari) tramite il prodotto riga-colonna. 
+
+Esplicitiamo il calcolo dell'elemento $a_{kj}$ supponendo che $k > j$ (le moltiplicazioni per indici maggiori di $j$ sono nulle per la triangolarità delle matrici), quindi abbiamo: 
+$$
+a_{kj} = \sum_{i=1}^{j} u_{ki} u_{ij} = 
+u_{kj}u_{jj} + \sum_{i=1}^{j-1} u_{ki} u_{ij}
+$$
+Estraiamo l'elemento $u_{kj}$ dall'equazione: 
+$$
+u_{kj} = \frac{a_{kj} - \sum_{i=1}^{j-1} u_{ki} u_{ij}}{u_{jj}}
+$$
+Vediamo invece come calcolare un elemento della diagonale $u_{kk}$. Tramite la seguente equazione cerchiamo di calcolare l'elemento $a_{kk}$: 
+$$
+a_{kk} = \sum_{p=1}^k u^2_{pk} = u^{2}_{kk} + \sum_{p=1}^{k-1} u^2_{pk}
+$$
+Oss. la sommatoria termina a $k$ e non ad $n$ perché per la struttura triangolare della matrice gli elementi $a_{k, k+1}, \dots, a_{k, n}$ sono nulli. Ora possiamo estrapolare l'elemento $u_{kk}$ come: 
+$$
+u_{kk} = \sqrt{a_{kk} - \sum_{p=1}^{k-1} u^2_{pk}}
+$$
+Calcolando $u_{11}$ la sommatoria verrebbe annullata, quindi $u_{11} = \sqrt{a_{11}}$. Bisogna seguire un certo andamento per poter calcolare tutti gli elementi di $U$, dato che un calcolo potrebbe richiedere dei calcoli di altri elementi della matrice. Nella seguente foto è illustrato tale andamento su una matrice $3\times 3$: 
+
+![image-20220614092522592](Ch_3_risoluzione_di_sistemi_lineari.assets/image-20220614092522592.png)
+
+
+
+### Algoritmo di Thomas
+
+L'algoritmo di Thomas è un TDMA (tridiagonal matrix algorithm), ovvero un algoritmo che opera su matrici tridiagonali. Una matrice tridiagonale di dimensione $n \times n$ ha $3n-2$ elementi. Scriviamola come prodotto di due matrici particolari, in cui le incognite sono $\alpha_i$ per $i=1, \dots, n$ e $\gamma_i$ per $i=1, \dots, n-1$. 
+
+![image-20220614100743948](Ch_3_risoluzione_di_sistemi_lineari.assets/image-20220614100743948.png)
+
+I coefficienti sono determinabili come segue: 
+
+* $\alpha_1 = a_1$ e $\alpha_i = a_i - b_i\gamma_{i-1}$ per $i=2, \dots, n$
+* $\gamma_1 = c_1 / \alpha_1$ e $\alpha_i = c_i / \alpha_i$ per $i = 2, \dots,n-1$
+
+Per una trattazione completa consultare il [seguente documento](https://www.cfd-online.com/Wiki/Tridiagonal_matrix_algorithm_-_TDMA_(Thomas_algorithm)).
+
+
+
+## Metodi iterativi
+
+Un metodo iterativo produce una successione di soluzioni che, sotto opportune condizioni, converge alla soluzione reale. Comunemente si parte da una soluzione randomica $x^{(0)}$, in quanto si dimostra che il metodo converge comunque. 
+
+
+
+### Descrizione generale di un algoritmo iterativo
+
+Sia $A \in \R^{n \times n}$ una matrice non degenere, si impone che: 
+$$
+\begin{cases}
+Ax=b \\
+A = M-N
+\end{cases}
+$$
+Quindi si ha: 
+$$
+\begin{split}
+Ax &=b \\
+(M-N)x &= b \\
+Mx - Nx &= b \\
+Mx^{(k+1)} &= Nx^{(k)} + b
+\end{split}
+$$
+E quindi si determina la soluzione al passo $k+1$ dalla soluzione al passo precedente: 
+$$
+x^{(k+1)} = M^{-1}Nx^{(k)} + M^{-1}  b
+$$
+L'equazione $A = M-N$ prende il nome di decomposizione, e si dice regolare se $M$ non è degenere e gli elementi dell'inversa $M^{-1}$ e di $N$ sono tutti maggiori di zero. 
+
+
+
+### Metodo iterativo convergente
+
+Un metodo iterativo si dice convergente se per qualunque vettore iniziale $x^{(0)}$ il metodo sarà convergente. 
+
+
+
+#### Teorema sulla convergenza (1)
+
+Sia $A = M-N$ una decomposizione regolare di $A$ e sia $\|M^{-1}N\| \le \lambda < 1$. Allora:
+
+1. $A$ non è singolare
+2. Il metodo iterativo associato alla decomposizione è convergente
+3. $\|x^{(k)} - x\|$ ci dà un limite all'errore commesso
+
+
+
+#### Teorema sulla convergenza (2)
+
+Condizione necessaria e sufficiente affinché il metodo iterativo sia convergente è che il raggio spettrale $\rho$ della matrice $M^{-1}N$ sia minore di 1: 
+$$
+\rho(M^{-1}N) < 1
+$$
+
+
+#### Corollario sulla convergenza (3)
+
+Dato che il determinante di una matrice è anche definito come il prodotto dei suoi autovalori, allora condizione necessaria affinché il metodo converga è che
+$$
+|\det(M^{-1}N)| < 1
+$$
+Se il determinante è maggiore di 1 allora esiste almeno un autovalore $\ge 1$, e quindi il metodo non può convergere per il teorema precedente.
+
+
+
+#### Corollario sulla convergenza (4)
+
+La traccia di una matrice è definita come la somma dei suoi autovalori. Condizione necessaria affinché il metodo converga è che: 
+$$
+|t_r(M^{-1}N)| < n
+$$
+Se vale il contrario, allora almeno uno degli autovalori è $\ge 1$, quindi il metodo non può convergere per il teorema precedente. 
+
+
+
+#### Correlazione tra raggio spettrale e convergenza
+
+Il raggio spettrale $\rho$ relativo alla matrice di uno specifico metodo è correlato alla convergenza dello stesso come segue: 
+
+* Se $\rho \ge 1$ il metodo diverge
+* Se $\rho < 1$ il metodo converge
+* Tanto più $\rho$ si avvicina ad 1, tanto più il metodo convergerà lentamente
+
+
+
+### Metodo di Jacobi
+
+Partendo da una soluzione iniziale $x^{(0)}$, la soluzione $x^{(k)}$ si determina dalla soluzione $x^{(k-1)}$ come segue: 
+
+![image-20220614105106441](Ch_3_risoluzione_di_sistemi_lineari.assets/image-20220614105106441.png) 
 
 
 
