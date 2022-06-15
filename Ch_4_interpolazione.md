@@ -433,7 +433,11 @@ Queste ultime sono descritte da un **grado** legato alla loro derivabilità. Per
 
 > In pratica si utilizzano spline di grado 1 o 3, poiché propongono un buon trade-off tra efficienza computazionale e approssimazione fornita. Si evita l'utilizzo di spline di **grado pari**, poiché quelle di **grado dispari** presentano meno errori di approssimazione. 
 
-In una spline di grado $k$ i campioni devono essere raggruppati in gruppi di $k+1$ elementi, i singoli polinomi saranno di grado $k$ e devono essere continue nei punti angolosi tutte le derivate fino all'ordine $k$. Un polinomio così definito prende il nome di **polinomio di grado k a tratti**. 
+
+
+### Polinomio a tratti e definizione di Spline
+
+Un polinomio di grado $k$ a tratti è una funzione che in ogni sottointervallo è un polinomio di grado $k$. Tali polinomi sono uniti in modo continuo in modo da interpolare i dati. Ciò comporta che la funzione interpolante possa avere derivate discontinue. È possibile imporre alcune proprietà di continuità alle derivate senza richiedere la conoscenza di tali derivate. Di particolare interesse è il caso in cui le derivate sono continue fino all'ordine $k-1$ se $k$ è il grado del polinomio a tratti, in tal caso il polinomio prende il nome di **spline di grado k**. 
 
 > Ricordiamoci che non è necessario conoscere le derivate della funzione nei nodi, le condizioni di continuità delle derivate sono imposte tra i polinomi contigui!!
 
