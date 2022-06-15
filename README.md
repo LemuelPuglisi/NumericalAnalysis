@@ -6,7 +6,7 @@ Course of Numerical Analysis @ UniCT / DMI, 2022
 | Teoria degli errori   |    ✅     |
 | Matrici               |    ✅     |
 | Sistemi Lineari       |    ✅     |
-| Interpolazione        |    ❌     |
+| Interpolazione        |    ✅     |
 | Minimi Quadrati       |    ❌     |
 | Integrazione Numerica |    ❌     |
 | Autovalori            |    ❌     |
