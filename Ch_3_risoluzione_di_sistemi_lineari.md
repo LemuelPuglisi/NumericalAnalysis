@@ -362,8 +362,16 @@ E quindi si determina la soluzione al passo $k+1$ dalla soluzione al passo prece
 $$
 x^{(k+1)} = M^{-1}Nx^{(k)} + M^{-1}  b
 $$
-L'equazione $A = M-N$ prende il nome di decomposizione, e si dice regolare se $M$ non è degenere e gli elementi dell'inversa $M^{-1}$ e di $N$ sono tutti maggiori di zero. 
+L'equazione $A = M-N$ prende il nome di decomposizione, e si dice regolare se $M$ non è degenere e gli elementi dell'inversa $M^{-1}$ e di $N$ sono tutti maggiori di zero. Spesso la matrice $M^{-1}N$ viene chiamata "matrice del metodo" a cui si fa riferimento, poiché studiandola è possibile studiarne la convergenza.
 
+
+
+#### Criteri d'arresto
+
+Fissata una tolleranza $\epsilon$, allora un criterio d'arresto standard utilizzabile per fermare un algoritmo iterativo è il seguente: 
+$$
+\frac{\|x^{(k+1)} - x^{(k)}\|_\infty}{\|x^{(k)}\|_\infty}
+$$
 
 
 ### Metodo iterativo convergente
@@ -420,11 +428,196 @@ Il raggio spettrale $\rho$ relativo alla matrice di uno specifico metodo è corr
 
 
 
+### Velocità di convergenza di un metodo iterativo
+
+Tramite la seguente valutazione è possibile ricavare il numero di iterazioni $k$ affinché l'errore $e$ generato da un certo metodo scenda al di sotto di un errore assegnato $m$. Siano $e^{(k)}$ ed $x^{(k)}$ rispettivamente l'errore e la soluzione generati al passo $k$. L'errore è ricavato come segue:
+$$
+e^{(k+1)} = x^{(k+1)} - x^{(k)}
+$$
+Che deriva dalla formula di approssimazione dell'errore, dove l'$x$ soluzione reale viene approssimato con la soluzione calcolata allo step successivo. È possibile calcolare un lower bound del numero di iterazioni $k$ necessarie a far scendere l'errore sotto $m$, come segue: 
+$$
+k \ge - \frac{m}{\log_{10} \rho(B)}
+$$
+Dove $B$ è la matrice del metodo. Sia $R$ il **fattore di convergenza** del metodo iterativo, definito come segue:
+$$
+R = \log_{10} \rho(B)
+$$
+Allora si avrà: 
+$$
+k \ge - \frac{m}{R}
+$$
+Più grande è $R$, più la convergenza sarà veloce. Da questo deriva che più $\rho(B)$ è vicino ad 1, più l'intero denominatore si annulla e più le esecuzioni necessarie crescono. Se $0 < \rho(B) < 1$ il logaritmo assumerà un valore negativo che è più grande tanto più è vicino allo zero. 
+
+
+
 ### Metodo di Jacobi
 
 Partendo da una soluzione iniziale $x^{(0)}$, la soluzione $x^{(k)}$ si determina dalla soluzione $x^{(k-1)}$ come segue: 
 
 ![image-20220614105106441](Ch_3_risoluzione_di_sistemi_lineari.assets/image-20220614105106441.png) 
 
+#### Condizione sufficiente di convergenza per Jacobi
+
+Sia $Ax=b$ il sistema da risolvere, condizione sufficiente affinché Jacobi converga è che $A$ sia strettamente diagonalmente dominante. 
+
+#### Formulazione matriciale
+
+La decomposizione presa in considerazione nel metodo è la seguente: 
+$$
+A = D-E-F
+$$
+Se si pone $M=D$ ed $N=E+F$ allora si ottiene la decomposizione classica:
+$$
+A = M-N
+$$
+Le tre matrici rappresentano: 
+
+* $D$ la diagonale principale di $A$
+* $E$ gli elementi al di sotto della diagonale principale di $A$, cambiati di segno.
+* $F$ gli elementi al di sopra della diagonale principale di $A$, cambiati di segno.
+
+Dalle matrici, ritroviamo l'equazione di aggiornamento del metodo di Jacobi:
+$$
+\begin{split}
+Ax &= b \\
+(D-E-F)x &= b \\
+Dx - (E+F)x &= b \\
+Dx &= (E+F)x + b \\
+x &= D^{-1}(E+F)x + D^{-1}b
+\end{split}
+$$
+Applichiamo gli indici all'ultimo passaggio per indicare l'aggiornamento:
+$$
+x^{(k+1)} = D^{-1}(E+F)x^{(k)} + D^{-1}b
+$$
+
+> Ricordiamo che l'inversa di una matrice diagonale è pari al reciproco dei singoli elementi non nulli.
+
+La matrice del metodo è $D^{-1}(E+F)$ e studiandola è possibile studiare la convergenza. 
 
 
+
+### Metodo di Gauss-Seidel (GS)
+
+È una variante del metodo di Jacobi che sfrutta il calcolo delle componenti precedenti della soluzione corrente per calcolare le successive. Si vede empiricamente che il metodo converge spesso più velocemente rispetto a quello di Jacobi (quindi il raggio spettrale di GS è minore). Nell'esempio sottostante, gli apici rossi sono quelli di Gauss-Seidel, mentre quelli neri sono di Jacobi.
+
+![image-20220615090632759](Ch_3_risoluzione_di_sistemi_lineari.assets/image-20220615090632759.png)
+
+
+
+#### Condizione sufficiente di convergenza per GS
+
+Sia $Ax=b$ il sistema da risolvere, condizione sufficiente affinché Jacobi converga è che $A$ sia strettamente diagonalmente dominante o che $A$ sia simmetrica definita positiva. 
+
+
+
+#### Formulazione matriciale
+
+La formulazione è analoga a quella di Jacobi, ma viene isolata la matrice $(D-E)$ anziché isolare solo la matrice $D$. Se volessimo affibiare le matrici alla trattazione generale, avremmo che $M=(D-E)$ e $N=F$. Vediamo i passaggi: 
+$$
+\begin{split}
+Ax &= b \\
+(D-E-F)x &= b \\
+(D-E)x - Fx &= b \\
+(D-E)x &= Fx + b \\
+x &= (D-E)^{-1}Fx + (D-E)^{-1}b
+\end{split}
+$$
+Supponendo l'esistenza dell'inversa. Applichiamo gli indici all'ultimo passaggio per indicare l'aggiornamento:
+$$
+x^{(k+1)} = (D-E)^{-1}Fx^{(k)} + (D-E)^{-1}b
+$$
+La matrice del metodo in questo caso è $(D-E)^{-1}F$ e studiandola è possibile studiare la convergenza.
+
+
+
+### Metodo Successive Over-Relaxation (SOR)
+
+SOR è un metodo basato su GS che applica un rilassamento al calcolo della soluzione. Si fissa un certo parametro $\omega$ e si calcola la soluzione utilizzata come la media pesata tra la soluzione di GS e la soluzione precedente:
+$$
+x^{(k+1)} = \omega x^{(k+1)} + (1-\omega)x^{(k)}
+$$
+
+#### Formulazione matriciale
+
+Ricaviamo l'equazione di aggiornamento del metodo, partendo dal sistema lineare: 
+$$
+\begin{split}
+Ax &= b \\
+\omega Ax &= \omega b \\
+\omega (D-E-F)x &= \omega b \\
+Dx + \omega (D-E-F)x &= Dx + \omega b \\
+Dx + \omega Dx - \omega Ex - \omega Fx &= Dx + \omega b \\
+(D - \omega E)x &= \omega Fx + Dx - \omega Dx + \omega b \\
+(D - \omega E)x &= [\omega F + (1- \omega)D]x + \omega b \\
+x &= (D - \omega E)^{-1}[\omega F + (1- \omega)D]x + (D - \omega E)^{-1} \omega b \\
+\end{split}
+$$
+Introduciamo la matrice $H(w) = (D - \omega E)^{-1}[\omega F + (1- \omega)D]$, sostituiamo nell'ultima equazione, e introduciamo gli apici del metodo iterativo: 
+$$
+x^{(k+1)} = H(\omega)x^{(k)} + (D - \omega E)^{-1} \omega b \\
+$$
+Poniamo: 
+$$
+L = D^{-1}E \\
+R = D^{-1}F
+$$
+E manipoliamo la matrice $H(\omega)$ come segue: 
+$$
+\begin{split}
+H(\omega) &= (D - \omega E)^{-1} [(1- \omega)D + \omega F] \\
+&= [D(I - \omega D^{-1}E)]^{-1} D[(1-\omega)I + \omega D^{-1}F ] \\ 
+&= [D(I - \omega L) ]^{-1} D[(1-\omega)I + \omega R] \\
+&= (I - \omega L)^{-1} D^{-1}D [(1-\omega)I + \omega R] \\
+&=(I - \omega L)^{-1} [(1-\omega)I + \omega R]
+\end{split}
+$$
+La matrice finale è data da: 
+$$
+H(\omega)=(I - \omega L)^{-1} [(1-\omega)I + \omega R]
+$$
+E studiando $\rho(H(\omega))$ non solo è possibile studiare la convergenza del metodo, ma dato il parametro $\omega$ arbitrario sarà possibile aggiustare la matrice per manipolare la sua convergenza. 
+
+
+
+#### Teorema di condizionamento del parametro di SOR
+
+Si ha la seguente relazione sempre verificata
+$$
+\rho(H(\omega)) \ge |\omega - 1| \hspace{.7cm}\forall \omega \in \R
+$$
+Da cui osserviamo che: 
+$$
+\begin{cases}
+\text{SOR diverge} & \omega \le 0 \or \omega \ge 2 \\
+\text{SOR converge} & 0 < \omega < 2
+\end{cases}
+$$
+Fissato $\omega$ nel range convergente, è possibile muoversi all'interno del range di convergenza per tarare l'algoritmo e renderlo più rapido. 
+
+
+
+#### Variante SSOR
+
+Symmetric SOR (SSOR) è una variante di SOR in cui viene preservata la possibile simmetria della matrice.
+
+
+
+### Metodo di discesa del gradiente
+
+Quando un sistema $Ax=b$ è molto grande, è possibile risolverlo riconducendolo ad un problema di minimizzazione. Si considera la forma quadratica del problema: 
+$$
+\phi(x) = \frac12 x^{T} A x + x^{T}b
+$$
+Si calcola il gradiente della funzione: 
+$$
+\Delta \phi = \left( \frac{\partial \phi}{\partial x_1}, \ldots, \frac{\partial \phi}{\partial x_n} \right)
+$$
+Utilizziamo il l'opposto del gradiente come direzione di discesa: 
+$$
+d^{(k)} = - \Delta \phi(x^{(k)})
+$$
+Sia $a_k$ la lunghezza del passo di aggiornamento all'$k$-esimo passo, aggiorniamo la soluzione: 
+$$
+x^{(k+1)} = x^{(k)} + a_k d^{(k)}
+$$
