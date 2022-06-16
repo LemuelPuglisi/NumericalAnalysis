@@ -7,7 +7,7 @@ Course of Numerical Analysis @ UniCT / DMI, 2022
 | Matrici               |    ✅     |
 | Sistemi Lineari       |    ✅     |
 | Interpolazione        |    ✅     |
-| Minimi Quadrati       |    ❌     |
+| Minimi Quadrati       |    ✅     |
 | Integrazione Numerica |    ❌     |
 | Autovalori            |    ❌     |
 | Equazioni non lineari |    ❌     |
