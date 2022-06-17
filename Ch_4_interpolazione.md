@@ -287,7 +287,7 @@ Questo tipo di interpolazione è un caso particolare dell'interpolazione hermiti
 
 ### Estensione dei teoremi sull'errore
 
-I teoremi sull'errore dell'interpolazione lagrangiana precedentemente enunciati valgono anche in questo caso, con l'unica differenza che nella funzione $W(x)$, se si conosce fino alla derivata $n$-esima di un certo nodo $x_i$, il termine $(x-x_i)$ deve essere elevato alla $n$.   
+I teoremi sull'errore dell'interpolazione lagrangiana precedentemente enunciati valgono anche in questo caso, con l'unica differenza che nella funzione $W(x)$, se si conosce fino alla derivata $n$-esima di un certo nodo $x_i$, il termine $(x-x_i)$ deve essere elevato alla $(n+1)$.   
 
 
 
