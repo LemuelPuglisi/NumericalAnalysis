@@ -103,6 +103,8 @@ La necessita dell'utilizzo di metodi iterativi può essere giustificata dalla di
 
 ## Metodo delle potenze
 
+> Nota: se si vuole ricavare tutto lo spettro attraverso il metodo delle potenze, si veda il metodo della deflazione.
+
 Il metodo delle potenze è un metodo iterativo che calcola l'autovalore principale $\lambda_1$. Si supponga che $A$ sia diagonalizzabile, un teorema enuncia che $A$ è diagonalizzabile se e solo se possiede $n$ autovettori linearmente indipendenti. Siano $u_1, \dots, u_n$ tali autovettori. 
 
 Il metodo parte da $x_0 \in \R$ casuale. Consideriamo $x_0$ come combinazione lineare degli autovettori: 
@@ -241,7 +243,191 @@ Anziché procedere come visto, possiamo utilizzare dei metodi che riducono la ma
 
 ### Metodo di Householder
 
+> Ottimo per matrici piene, non per matrici sparse. 
+
+Si basa sull'idea di annullare ogni colonna sotto la sub-diagonale, caricando il peso sull'elemento della sub-diagonale. Il metodo si applica $n-1$ volte alla matrice di partenza. Supponiamo di trovarci al passo $i$ e identifichiamo la colonna $i$-esima attraverso il vettore $x$: 
+$$
+x = \begin{bmatrix}
+x_1 & x_2 & \dots & 
+x_{n-q} & x_{n-q+1} & \dots &
+x_n
+\end{bmatrix}^T
+$$
+Dove $q$ identifica il numero di elementi sotto la diagonale principale (compreso l'elemento della diagonale principale), quindi: 
+
+* $x_{n-q}$ è l'elemento nella diagonale principale
+* $x_{n-q+1}$ è l'elemento nella sub-diagonale principale, che dovrà farsi carico degli elementi cancellati
+
+Il vettore dovrà essere trasformato come segue: 
+$$
+x = \begin{bmatrix}
+x_1 \\ x_2 \\ \vdots \\ 
+x_{n-q} \\ x_{n-q+1} \\  x_{n-q+2} \\ \vdots \\
+x_n
+\end{bmatrix}
+\to Px = 
+\begin{bmatrix}
+x_1 \\ x_2 \\ \vdots \\ 
+x_{n-q} \\ \bar x_{n-q+1} \\  0 \\ \vdots \\
+0
+\end{bmatrix}
+$$
+Per far rimanere invariata la porzione $[x_1, \dots, x_{n-q}]$ del vettore, possiamo semplicemente porre la matrice di trasformazione come: 
+$$
+P = \begin{bmatrix}
+I & 0 \\
+0 & \tilde{P}
+\end{bmatrix}
+$$
+Per far corrispondere tutto, le dimensioni sono $I \in \R^{n-q}$ e $\tilde{P} \in \R^{q}$, che è l'effettivo operatore che effettua l'eliminazione degli elementi e la trasformazione $x_{n-q+1} \to \bar x_{n-q+1}$, e che prende il nome di **matrice di Householder**. Spieghiamo come costruire $\tilde{P}$ con un esempio. 
 
 
+
+#### Esempio: Costruzione matrice di Householder
+
+Sia $x$ la porzione di interesse (da $n-1+1$ in poi) del vettore colonna da annullare:
+$$
+x = \begin{bmatrix} 2 & -2 & 1 \end{bmatrix}^T
+$$
+La matrice di Householder vale:
+$$
+\tilde P = I - 2 \frac{v^Tv}{v^T v}
+$$
+Dove il vettore $v$, derivato da una lunga serie di calcoli, è definito come segue: 
+$$
+v = x \pm \|x\|_2 \cdot e_1
+$$
+Dove $e_1 = \begin{bmatrix} 1 & 0 & 0 \end{bmatrix}$ è sempre il primo vettore della base canonica di $\R^q$. Si sceglie solitamente la norma a **segno positivo**. Procediamo: 
+$$
+v = x + \|x\|_2 \cdot e_1 = 
+\begin{bmatrix}
+2 \\ -2 \\ 1
+\end{bmatrix}
++ 3
+\begin{bmatrix}
+1 \\ 0 \\ 0
+\end{bmatrix}
+= 
+\begin{bmatrix}
+5 \\ -2 \\ 1
+\end{bmatrix}
+$$
+Sostituiamo $v$ nella definizione di $\bar P$ e calcoliamola: 
+$$
+\tilde P = I - 2 \frac{v^Tv}{v^T v} = 
+\begin{bmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1
+\end{bmatrix}
+- \frac{2}{30} 
+\begin{bmatrix}
+25 & -10 & 5 \\
+-10 & 4 & -2 \\
+5 & -2 & 1
+\end{bmatrix} =
+\begin{bmatrix}
+-\frac{2}{3} & \frac{2}{3} & -\frac{1}{3} \\
+\frac{2}{3} & \frac{11}{15} & \frac{2}{15} \\
+-\frac{1}{3} & \frac{2}{15} & \frac{14}{15}
+\end{bmatrix}
+$$
+Si osservi che la matrice $\tilde{P}$ di Householder è una matrice **simmetrica ortogonale**. Eseguiamo la verifica andando a calcolare $\bar x = Px$
+$$
+\bar x = \tilde{P}x =
+\begin{bmatrix}
+-\frac{2}{3} & \frac{2}{3} & -\frac{1}{3} \\
+\frac{2}{3} & \frac{11}{15} & \frac{2}{15} \\
+-\frac{1}{3} & \frac{2}{15} & \frac{14}{15}
+\end{bmatrix}
+\begin{bmatrix}
+2 \\ -2 \\ 1
+\end{bmatrix} =
+\begin{bmatrix}
+-3 \\ 0 \\ 0
+\end{bmatrix}
+$$
+Il vettore si attacca alla parte della subdiagonale della colonna esaminata, dopodiché si passa alla colonna successiva. 
+
+
+
+### Metodo di Givens
+
+> Ottimo per matrici sparse. 
+
+Il metodo di Givens ha lo stesso scopo del metodo di Householder, quindi per ogni colonna (eccetto l'ultima) elimina tutti gli elementi sotto la subdiagonale, caricando tutto sull'elemento della subdiagonale. La differenza è che anziché calcolare $\tilde P$ per eliminare direttamente tali elementi, calcola una matrice $J$ per ognuno degli elementi da annullare. Il calcolo di $J$ è più semplice di $\tilde P$ e se la matrice è sparsa il metodo conviene. Vediamo come costruire tale matrice. 
+
+> Altra differenza: la matrice di Householder è definita come una matrice di traslazione, mentre quella di Givens come una matrice di rotazione. 
+
+#### Costruzione matrice di Givens 
+
+Fissata la $i$-esima colonna su cui si sta lavorando, consideriamo il vettore $x$ come la porzione di interesse di tale colonna, ovvero dalla subdiagonale in giù. Adesso: 
+
+- Si vuole annullare l'elemento $x_k \in x$ 
+- L'elemento subdiagonale $x_i \in x$ prenderà carico dell'annullamento. 
+
+Si costruisce $J(i,k,\theta)$ (dove $\theta$ è un angolo di rotazione che non dovremo determinare) come segue:
+
+![image-20220619100831975](Ch_7_autovalori.assets/image-20220619100831975.png)
+
+La matrice è essenzialmente una matrice identità $I_q$ con i seguenti elementi modificati: 
+$$
+J_{ii} = c \hspace{1cm} 
+J_{kk} = c \hspace{1cm}
+J_{ik} = s \hspace{1cm}
+J_{ki} = -s
+$$
+Dove: 
+$$
+c = \cos(\theta) \hspace{1.5cm} s = \sin(\theta)
+$$
+Anche se non andremo a lavorare con $\theta$, bensì imposteremo $c,s$ in modo che valga l'identità fondamentale della trigonometria: 
+$$
+\sin^2(\theta) + \cos^2(\theta) = 1 \to c^2 + s^2 = 1
+$$
+Ed imposteremo $c,s$ affinché venga rispettata la seguente condizione di interesse: 
+$$
+x = \begin{bmatrix}
+x_1 \\ \vdots \\ x_k \\ \vdots 
+\end{bmatrix}
+\to Jx = 
+x = \begin{bmatrix}
+x_1 \\ \vdots \\ 0 \\ \vdots 
+\end{bmatrix}
+$$
+Si può dimostrare che impostando nel seguente modo $s,c$ vengono rispettate entrambe le condizioni:<
+$$
+c = \frac{x_i}{\sqrt{x_i^2 + x_k^2}} \hspace{2cm}
+s = \frac{x_k}{\sqrt{x_i^2 + x_k^2}}
+$$
+Una volta formata la matrice $J$, si procede ad annullare l'elemento in $\bar x = J x$. Si può osservare che la matrice $J$ di Givens è **ortogonale** (ma non simmetrica, come quella di Householder).
+
+
+
+### Autovalori in una matrice di Hessemberg
+
+I metodi precedenti restituiscono una matrice di Hessemberg simile alla matrice originale. Per calcolare i suoi autovalori bisogna distinguere due scenari:
+
+- caso in cui $H$ è simmetrica, quindi una matrice tridiagonale 
+- caso in cui $H$ è asimmetrica
+
+In generale, ottenuto il polinomio caratteristico è sempre necessario un metodo per trovare gli zeri di una equazione non lineare, che vedremo nel prossimo capitolo. 
+
+
+
+#### Matrice di Hessemberg simmetrica
+
+Nel caso in cui la matrice di Hessemberg $H$ è simmetrica, quindi una matrice tridiagonale:
+
+![image-20220619103800807](Ch_7_autovalori.assets/image-20220619103800807.png)
+
+il polinomio caratteristico viene determinato ricorsivamente. Sia $p_i(\lambda)$ il polinomio caratteristico del minore principale $i$-esimo della matrice $H$, allora: 
+$$
+\begin{cases}
+p_0(\lambda) = 1 \\
+p_1(\lambda) = \lambda - a_1 \\
+p_i(\lambda) = p_{i-1}(\lambda)(\lambda - a_i) - p_{i-2}(\lambda) c_{i-1}^2
+\end{cases}
+$$
 
 

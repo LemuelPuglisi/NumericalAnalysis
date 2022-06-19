@@ -9,6 +9,6 @@ Course of Numerical Analysis @ UniCT / DMI, 2022
 | Interpolazione        |    ✅     |
 | Minimi Quadrati       |    ✅     |
 | Integrazione Numerica |    ✅     |
-| Autovalori            |    ❌     |
+| Autovalori            |    ✅     |
 | Equazioni non lineari |    ❌     |
 
