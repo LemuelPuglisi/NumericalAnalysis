@@ -10,5 +10,5 @@ Course of Numerical Analysis @ UniCT / DMI, 2022
 | Minimi Quadrati       |    ✅     |
 | Integrazione Numerica |    ✅     |
 | Autovalori            |    ✅     |
-| Equazioni non lineari |    ❌     |
+| Equazioni non lineari |    ✅     |
 
