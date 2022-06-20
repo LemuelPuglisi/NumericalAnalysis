@@ -201,12 +201,14 @@ Dalle norme vettoriali $1,2,\infty$ vengono indotte le omonime norme matriciali:
 $$
 \begin{split}
 
-\norm{x}_1 = \sum_i \abs{x_i} & \to & \norm{A}_1 = \max_{1 \le j \le n} \abs{a_{ij}} \\
+\norm{x}_1 = \sum_i \abs{x_i} & \to & \norm{A}_1 = \max_{1 \le j \le n} \sum_{i=1}^n |a_{ij}|\\
 \norm{x}_2 = \sqrt{\sum_i x_i^2} & \to & \norm{A}_2 = \sqrt{\rho(A^* A)} \\
-\norm{x}_{\infty} = \max_{i} \abs{x_i} & \to & \norm{A}_\infty = \max_{i}\sum_{j}\abs{a_{ij}}
+\norm{x}_{\infty} = \max_{i} \abs{x_i} & \to & \norm{A}_\infty =\max_{1 \le i \le n} \sum_{j=1}^n |a_{ij}|\\
 
 \end{split}
 $$
+
+> Nota: nella norma 1 si prende la somma in valore maggiore assoluto della colonna, mentre nella norma infinito si prende la stessa somma, ma della riga. 
 
  
 
