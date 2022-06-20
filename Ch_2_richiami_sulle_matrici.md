@@ -332,7 +332,7 @@ Una matrice $A$ è diagonalizzabile se e solo se ha $n$ autovettori linearmente 
 
 ### Teorema di Shur
 
-Sia $A \in \C^{n\times n}$ allora esiste una matrice unitaria $U$ tale che $T = U^* AU$ dove $T$ è triangolare superiore. Se $A$ è reale, allora $T$ è ortogonale. 
+Sia $A \in \C^{n\times n}$ allora esiste una matrice unitaria $U$ tale che $T = U^* AU$ dove $T$ è triangolare superiore. Se $A$ è reale, allora $U$ è ortogonale. 
 
 
 
