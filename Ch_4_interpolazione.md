@@ -191,7 +191,9 @@ $$
 La funzione $F(t)$ ha esattamente $n+2$ zeri:
 
 *  $n+1$ zeri sono dati dalla componente $W(t)$ che si annulla sugli $n+1$ nodi
-* 1 zero è dato per $t=x$ 
+   *  e da $f(t)-p(t)$ che sugli zeri è zero per la condizione di interpolazione
+
+*  1 zero è dato per $t=x$ 
 
 La funzione $F$ è differenziabile $n+1$ volte poichè è composta da: 
 
@@ -276,7 +278,7 @@ Supponiamo che siano forniti:
 
 Allora il grado del polinomio interpolante calcolato attraverso interpolazione hermitiana sarà 
 $$
-N = \left(\sum_{i=0}^n m_i\right) - 1
+N = n+\left(\sum_{i=0}^n m_i\right)
 $$
 
  ### Interpolazione osculatoria
@@ -307,7 +309,7 @@ Fissata una tipologia di campionamento (uniforme oppure non uniforme) e fissato 
 
 ### Teorema di Faber
 
-Per ogni triangolazione $\Delta$ esiste una funzione $f \in C[a,b]$ per cui la successione di polinomi $\{p_n(x)\}$ non converge uniformemente ad $f(x). 
+Per ogni triangolazione $\Delta$ esiste una funzione $f \in C[a,b]$ per cui la successione di polinomi $\{p_n(x)\}$ non converge uniformemente ad $f(x)$. 
 
 > Esempio: funzione di Runge $f(x) = 1 / (1+x^2)$ con $x \in[-5,5]$ con campionamento omogeneo. 
 
@@ -345,10 +347,10 @@ Quindi per valutare $T_n(x)$ bisogna prima calcolare $\theta = arccos(x)$, e dop
 Otteniamo il polinomio per $n=k+1$ ed $n=k-1$ ed utilizziamo [le formule di sommazione degli angoli per il coseno](https://www.youmath.it/formulari/65-formulari-di-trigonometria-logaritmi-esponenziali/159-identita-trigonometriche-formule-di-prostaferesi-formule-di-werner.html): 
 $$
 T_{k+1}(x) = \cos((k+1)\theta) = \cos(k\theta + \theta) = 
-\cos(k\theta)\cos(\theta) + \cos(k\theta)\cos(\theta) \\
+\cos(k\theta)\cos(\theta) + \sin(k\theta)\sin(\theta) \\
 
 T_{k-1}(x) = \cos((k-1)\theta) = \cos(k\theta - \theta) = 
-\cos(k\theta)\cos(\theta) - \cos(k\theta)\cos(\theta)
+\cos(k\theta)\cos(\theta) - \sin(k\theta)\sin(\theta)
 $$
 Sommiamo i polinomi e manipoliamo l'equazione: 
 $$
@@ -360,7 +362,7 @@ T_{k+1}(x) &= 2x \cdot T_k(x) - T_{k-1}(x)
 $$
 Dove sostituiamo $x=\cos(\theta)$ e $T_k = \cos(k\theta)$. Possiamo definire i polinomi di Chebichev ricorsivamente come segue:
 $$
-\begin{cases}
+T_n(x)=\begin{cases}
 1 & n=0 \\
 x & n=1 \\
 2x \cdot T_k(x) - T_{k-1}(x) & n \ge 2
@@ -429,7 +431,7 @@ Parleremo di spline interpolanti.
 
 ### Grado della spline
 
-Queste ultime sono descritte da un **grado** legato alla loro derivabilità. Per ottenere una spline interpolante, è necessario raggruppare i campioni continui (max ~5 per gruppo) ed interpolare all'interno del gruppo. Otterremo tanti polinomi quanti sono i gruppi. I polinomi vengono poi concatenati per creare la spline. La concatenazione dei polinomi **non preserva la derivabilità** in quanto crea dei punti angolosi. La spline costruita come descritto prima è di grado 0. Per ottenere una spline di grado $k$, bisogna imporre delle condizioni su tutte le derivate di ordine minore o uguale a $k$.  
+Queste ultime sono descritte da un **grado** legato alla loro derivabilità. Per ottenere una spline interpolante, è necessario raggruppare i campioni contigui (max ~5 per gruppo) ed interpolare all'interno del gruppo. Otterremo tanti polinomi quanti sono i gruppi. I polinomi vengono poi concatenati per creare la spline. La concatenazione dei polinomi **non preserva la derivabilità** in quanto crea dei punti angolosi. La spline costruita come descritto prima è di grado 1. Per ottenere una spline di grado $k$, bisogna imporre delle condizioni su tutte le derivate di ordine minore o uguale a $k-1$.  
 
 > In pratica si utilizzano spline di grado 1 o 3, poiché propongono un buon trade-off tra efficienza computazionale e approssimazione fornita. Si evita l'utilizzo di spline di **grado pari**, poiché quelle di **grado dispari** presentano meno errori di approssimazione. 
 
@@ -456,7 +458,7 @@ Per grado di libertà si intende il numero di condizioni da imporre nella costru
 Per $k=1$ si hanno le spline lineari. Se determiniamo il grado di libertà, supponendo di avere $n+1$ nodi, otterremo un grado di libertà $n+1$. Le $n+1$ condizioni sono banalmente soddisfatte attraverso la costruzione di una particolare base. Definiamo le funzioni cappello $\psi_i$ per $i=1, \dots, n-1$ come segue: 
 $$
 \psi_i(x) = \begin{cases}
-0 & x \in [x_{i-1}, x_{i+1}] \\
+0 & x \not\in [x_{i-1}, x_{i+1}] \\
 (x - x_{i-1}) / (x_i - x_{i-1}) & x \in [x_{i-1}, x_i]\\
 (x_{i+1} - x) / (x_{i+1} - x_i) & x \in [x_i, x_{i+1}]
 
