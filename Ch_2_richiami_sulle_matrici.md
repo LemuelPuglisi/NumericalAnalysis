@@ -202,13 +202,13 @@ $$
 \begin{split}
 
 \norm{x}_1 = \sum_i \abs{x_i} & \to & \norm{A}_1 = \max_{1 \le j \le n} \abs{a_{ij}} \\
-\norm{x}_2 = \sqrt{\sum_i x_i^2} & \to & \norm{A}_2 = \sqrt{\rho(A \cdot A)} \\
+\norm{x}_2 = \sqrt{\sum_i x_i^2} & \to & \norm{A}_2 = \sqrt{\rho(A^* A)} \\
 \norm{x}_{\infty} = \max_{i} \abs{x_i} & \to & \norm{A}_\infty = \max_{i}\sum_{j}\abs{a_{ij}}
 
 \end{split}
 $$
 
-## 
+ 
 
 ## Autovalori e autovettori
 

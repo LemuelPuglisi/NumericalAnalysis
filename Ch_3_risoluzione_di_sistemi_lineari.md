@@ -114,7 +114,7 @@ Supponendo che la matrice $A$ sia non degenere, e sia $a_{11} \ne 0$ (altrimenti
 $$
 m_{i1}^{(1)} = - \frac{a_{i1}}{a_{11}} \hspace{1cm} i=2, \dots, n
 $$
-Aggiungiamo alla $i$-esima equazione la prima equazione moltiplicata per $m_{i1}$. Così facendo andremo ad annullare tutti gli elementi della prima colonna meno che il primo. In generale, durante la $i$-esima iterazione lo scopo è a nnullare tutti gli elementi della $i$-esima colonna al di sotto dell'$i$-esimo, quindi si calcolano i moltiplicatori tramite l'elemento $a_{ii}$, che prende il nome di pivot: 
+Aggiungiamo alla $i$-esima equazione la prima equazione moltiplicata per $m_{i1}$. Così facendo andremo ad annullare tutti gli elementi della prima colonna meno che il primo. In generale, durante la $i$-esima iterazione lo scopo è annullare tutti gli elementi della $i$-esima colonna al di sotto dell'$i$-esimo, quindi si calcolano i moltiplicatori tramite l'elemento $a_{ii}$, che prende il nome di pivot: 
 $$
 m_{ji}^{(i)} = - \frac{a_{ji}}{a_{ii}} \hspace{1cm} j = i+1, \dots, n
 $$
