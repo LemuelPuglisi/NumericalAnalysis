@@ -99,11 +99,44 @@ Concetti MUST:
 
 
 
+## Minimi Quadrati
+
+Data una funzione $f\in C[a,b]$ **problema discreto ai minimi quadrati** consiste nel trovare $p^* \in P_n$ 
+$$
+p^*(x) = \arg\min_{p \in P_n} \sum_{i=0}^m w_i [ p(x_i) - y_i ]^2
+$$
+Se i nodi e i valori sono $m > n+1$, allora si ha un sistema lineare sovradimensionato $Ax=b$. Un teorema dimostra che il polinomio $p^*$ si ottiene come soluzione al sistema $A^TAx=A^Tb$, che però soffre di malcondizionamento all'aumentare di $n$. 
 
 
 
+Nel problema **continuo dei minimi quadrati** la $f$ è nota e si vuole costruire il miglior $p^*\in P_n$ (grado fissato ad $n$), ovvero:
+$$
+p^* = \arg\min_{p \in P_n}\int_a^b w(x) \left[p^*(x) - f(x)\right]^2dx
+$$
+Per trovare ciò si sfrutta il *teorema di Fourier delle equazioni normali*, che ci dice che il polinomio è rappresentabile come combinazione lineare delle componenti della base $\{\varphi_1, \dots, \varphi_n\}$, e che i coefficienti di tale combinazione lineare $a_1, \dots, a_n$ possono essere estratti da un sistema detto *sistema delle equazioni normali*: 
+$$
+\begin{cases}
+\sum_{i=0}^n a_i \langle \varphi_i, \varphi_1 \rangle =
+\langle f, \varphi_1 \rangle \\
+\vdots \\
+\sum_{i=0}^n a_i \langle \varphi_i, \varphi_n \rangle =
+\langle f, \varphi_n \rangle \\
+\end{cases}
+$$
+Tale sistema ha una matrice malcondizionata, e si dimostra che una matrice ortogonale / ortonormale risolva il problema. Si utilizza l'ortogonalizzazione di Gram-Schmidt per trasformare una base iniziale $p_i$ in una base ortonormale $q_i$, per $i=1, \dots, n$. Essa si costruisce ricorsivamente: 
+$$
+q_0(x)=1 \hspace{2cm}q_k(x) = p_k - \sum_{i=0}^{k-1} \langle x^k, p_i \rangle \cdot p_i(x)
+$$
+Se non si è vincolati ad una base, è possibile utilizzare i polinomi di Chebichev o di Legendre. Con una base ortonormale, il sistema delle equazioni normali si risolve banalmente: 
+
+$$
+\begin{cases}
+a_1 = \langle f, \varphi_1 \rangle \\
+\vdots \\
+a_n = \langle f, \varphi_n \rangle \\
+\end{cases}
+$$
 
 
-
-
+## Quadratura
 
