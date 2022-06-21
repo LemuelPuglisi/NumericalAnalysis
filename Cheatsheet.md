@@ -4,12 +4,14 @@
 
 ## Teoria degli errori
 
-Insieme dei numeri macchina: 
+**Ordine di convergenza di un metodo iterativo**
+L'ordine di convergenza $p$ esprime il numero di cifre decimali che il metodo guadagna, ad ogni iterazione, rispetto alla soluzione esatta. 
+
+**Insieme dei numeri macchina** 
 $$
 F(t, b, L,U) = \{0\} \cup \bigg\{x \in \R : x = \pm b^e\sum_{i=1}^{t} a_i b^{-i} \bigg\}
 $$
 
-> ...
 
 
 
