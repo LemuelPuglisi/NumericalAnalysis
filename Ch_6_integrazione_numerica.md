@@ -8,7 +8,7 @@ Sia $f$ la funzione integranda (spesso non lineare, difficile da integrare) si v
 $$
 I(f) = \int_a^b f(x)df
 $$
-L'approssimazione prende il nome di quadratura $Q(f)$ dell'integrale $I(f)$
+L'approssimazione prende il nome di quadratura $Q_n(f)$ dell'integrale $I(f)$
 $$
 Q_n(f) = \sum_{i=0}^n a_i f(x_i)
 $$
@@ -148,7 +148,7 @@ Rimappiamo l'intervallo da $[a,b]$ a $[-h,h]$ (sono intervalli della stessa dime
 $$
 Q_2(f) = a_0 f(-h) + a_1f(0) + a_2f(h)
 $$
-Il polinomio interpolante sarà di grado $2$, quindi vogliamo che il grado di precisione sia almeno 2. Utilizziamo il metodo dei coefficienti indeterminati per importo e ricavarci $a_0, a_1, a_2$ di conseguenza: 
+Il polinomio interpolante sarà di grado $2$, quindi vogliamo che il grado di precisione sia almeno 2. Utilizziamo il metodo dei coefficienti indeterminati per ricavarci $a_0, a_1, a_2$: 
 $$
 \begin{cases}
 Q_2(1) = I(1) \\
@@ -188,7 +188,7 @@ Q_2(f) = \frac h3 \bigg( f(-h) + 4f(0) + f(h) \bigg)
 $$
 Traslando tutto in $[a,b]$ otteniamo: 
 $$
-Q_2(f) = \frac {b-a}6 \bigg( f(a) + 4f(\frac{b-a}{2}) + f(b) \bigg)
+Q_2(f) = \frac {b-a}6 \bigg( f(a) + 4f(\frac{a+b}{2}) + f(b) \bigg)
 $$
 Anche se viene imposto il grado di precisione almeno 2 durante la costruzione, il **reale grado di precisione** della regola di Simpson è 3 (provare per credere). 
 
@@ -226,8 +226,8 @@ $$
 
 Ricavando una formula di quadratura attraverso le formule di NC, vale che il grado di precisione $m$ è strettamente legato ad $n$ (grado del polinomio) ed in particolare:
 
-- Se $n$ è pari, $m=n$
-- Se $n$ è dispari, $m=n+1$
+- Se $n$ è pari, $m=n+1$
+- Se $n$ è dispari, $m=n$
 
 Si può dimostrare che, se $h$ è la distanza tra un nodo e l'altro ed $n+1$ è il numero di nodi, allora l'errore 
 $$
@@ -244,7 +244,7 @@ Per questo non conviene andare oltre $n=2$. Per ottenere formule più accurate s
 
 L'idea è quella di dividere $[a,b]$​ in sotto-intervalli e di utilizzare una formula di Newton-Cotes per integrare ogni sotto-intervallo. Il numero di sotto-intervalli dipende da che tolleranza dell'errore impostiamo.  Sia $N$ il numero di sotto-intervalli in cui si divide $[a,b]$, allora: 
 $$
-Q_n(f) = \sum_{i=0}^{N-1} \int_{x_i}^{x_{i+1}} f(x)dx
+Q_N(f) = \sum_{i=0}^{N-1} \int_{x_i}^{x_{i+1}} f(x)dx
 $$
 
 
@@ -252,11 +252,11 @@ $$
 
 Se si decide di utilizzare la regola del trapezio, allora la quadratura sarà:
 $$
-Q_n(f) = \sum_{i=0}^{N-1} \bigg[ Q_1(f) + E_T(f) \bigg]_{x_i}^{x_{i+1}}
+T_N(f) = \sum_{i=0}^{N-1} \bigg[ Q_1(f) + E_T(f) \bigg]_{x_i}^{x_{i+1}}
 $$
 Notiamo che, una volta conosciuto l'errore di quadratura, possiamo andare a sommarlo per ottenere una quadratura più precisa. Apice e pedice nella parentesi quadra indicano che la quadratura viene svolta nel sotto-intervallo $[x_i, x_{i+1}]$. Andiamo a sostituire le espressioni: 
 $$
-Q_n(f) = \sum_{i=0}^{N-1}\left(
+T_N(f) = \sum_{i=0}^{N-1}\left(
 \frac{f(x_i) + f(x_{i+1})}{2}(x_{i+1} - x_i) 
 - \frac{f''(\eta_i)}{12}(x_{i+1} - x_i)^3
 \right)
@@ -267,28 +267,28 @@ h = \frac{b-a}N
 $$
 Sostituiamo $h$ nella formula: 
 $$
-Q_n(f) = \sum_{i=0}^{N-1}\left(
+T_N(f) = \sum_{i=0}^{N-1}\left(
 \frac{f(x_i) + f(x_{i+1})}{2}h 
 - \frac{f''(\eta_i)}{12}h^3
 \right)
 $$
 Che per la proprietà di linearità delle sommatorie può essere riscritta come: 
 $$
-Q_n(f) = \frac h2 \sum_{i=0}^{N-1}\bigg[ f(x_i) + f(x_{i+1} \bigg]
+T_N(f) = \frac h2 \sum_{i=0}^{N-1}\bigg[ f(x_i) + f(x_{i+1} \bigg]
 -\sum_{i=0}^{N-1} \left(\frac{f''(\eta_i)}{12}h^3\right)
 $$
 Concentriamoci sulla prima sommatoria:
 $$
 \begin{split}
 \sum_{i=0}^{N-1} \bigg[ f(x_i) + f(x_{i+1} \bigg] &= 
-\bigg[ f(x_1) + f(x_2) \bigg] + \bigg[ f(x_2) + f(x_3) \bigg] + \dots +
-\bigg[ f(x_{n-1}) + f(x_n) \bigg] \\
-&=f(x_1)+f(x_n)+ 2\sum_{i=1}^{N-1} f(x_i)
+\bigg[ f(x_0) + f(x_1) \bigg] + \bigg[ f(x_1) + f(x_2) \bigg] + \dots +
+\bigg[ f(x_{N-1}) + f(x_N) \bigg] \\
+&=f(x_0)+f(x_N)+ 2\sum_{i=1}^{N-1} f(x_i)
 \end{split}
 $$
 Sostituendo all'espressione precedente:
 $$
-Q_n(f) = \frac h2 \bigg[ f(x_1)+f(x_n) \bigg]+ h\sum_{i=1}^{N-1} f(x_i) 
+T_N(f) = \frac h2 \bigg[ f(x_0)+f(x_N) \bigg]+ h\sum_{i=1}^{N-1} f(x_i) 
 -\sum_{i=0}^{N-1} \left(\frac{f''(\eta_i)}{12}h^3\right)
 $$
 Dato che non sappiamo valutare gli $\eta_i$ nella formula dell'errore, possiamo utilizzare il **lemma del valor medio applicato alle sommatorie**, che enuncia: 
@@ -313,7 +313,7 @@ E_{TC}(f) = -f''(\eta) \frac{(b-a)^3}{12N^2}
 $$
 Sostituiamolo all'espressione principale della quadratura (43):
 $$
-Q_n(f) = \frac h2 \bigg[ f(x_1)+f(x_n) \bigg]+ h\sum_{i=1}^{N-1} f(x_i) 
+T_N(f) = \frac h2 \bigg[ f(x_0)+f(x_N) \bigg]+ h\sum_{i=1}^{N-1} f(x_i) 
  -f''(\eta) \frac{(b-a)^3}{12N^2}
 $$
 
@@ -357,7 +357,7 @@ N = \root{4}\of{\frac{f^{(IV)}(\eta) (b-a)^5 }{2880 E_{TC}(f)}}
 $$
 Impostando una tolleranza $\epsilon$ e utilizzando il massimo di $\|f^{(IV)}\|_{max}$ dobbiamo selezionare:
 $$
-N \ge \root{4}\of{\frac{\|f^{(IV)}\|_{max} (b-a)^5 }{2880 \epsilon }}
+N \ge \root{4}\of{\frac{\|f^{(IV)}\|_{\infty} (b-a)^5 }{2880 \epsilon }}
 $$
 
 

@@ -128,7 +128,7 @@ x_k &= A^k (\alpha_1 u_1 + \dots + \alpha_n u_n) \\
 
 \end{split}
 $$
-Nei passaggi abbiamo applicati alcune proprietà fondamentali degli autovalori. Adesso raccogliamo per $\alpha_1 \lambda_1^k$
+Nei passaggi abbiamo applicato alcune proprietà fondamentali degli autovalori. Adesso raccogliamo per $\alpha_1 \lambda_1^k$
 $$
 x_k = \alpha_1 \lambda_1^k \left[
 u_1 + 
@@ -137,7 +137,7 @@ u_1 +
 \frac{\alpha_n}{\alpha_1}\left( \frac{\lambda_n}{\lambda_1} \right)^k u_n
 \right]
 $$
-A questo punto normalizziamo il vettore dividendo per $\alpha_1 \lambda^k_1$
+A questo punto dividiamo ambo i lati per $\alpha_1 \lambda^k_1$
 $$
 \bar{x}_k = \frac{x_k}{\alpha_1 \lambda_1^k} =
 u_1 + 
@@ -149,7 +149,7 @@ u_1 + \sum_{i=1}^n \frac{\alpha_i}{\alpha_1}\left( \frac{\lambda_i}{\lambda_1} \
 $$
 Adesso studiamo il limite per $k \to +\infty$ 
 $$
-\lim_{k \to +\infty} x_k = 
+\lim_{k \to +\infty} \bar x_k = 
 \lim_{k \to +\infty} \left[ u_1 + \sum_{i=1}^n \frac{\alpha_i}{\alpha_1}\left( \frac{\lambda_i}{\lambda_1} \right)^k u_i \right]
 $$
 Dato che $\lambda_1$ è la componente principale, ed è più grande in modulo rispetto agli altri autovalori, allora il rapporto $\lambda_i / \lambda_1$ tenderà a 0 per $k \to +\infty$. Questo implica che il limite tenderà a $u_1$
@@ -183,6 +183,16 @@ $$
 \frac{u_1^T u_1}{u_1^T u_1} \lambda_1 = \lambda _1
 $$
 Per evitare problemi di underflow / overflow, si normalizzano i vettori ad ogni iterazione in modo che la loro norma sia unitaria. 
+
+
+
+### Iterazione
+
+* Si parte da $x_0$ random
+* Durante l'iterazione $i$-esima: 
+  * Si calcola $x_{i+1} = A x_{i}$
+  * Si calcola il coefficiente di Rayleigh $\beta_{i}$ come visto sopra.
+  * Se è soddisfatto un criterio di terminazione, si ferma l'algoritmo
 
 
 
@@ -235,7 +245,7 @@ T_k &= R_k Q_k \\
 &= (Q_0\dots Q_{k-1}Q_k)^T A (Q_0\dots Q_{k-1}Q_k)
 \end{split}
 $$
-Osserviamo che $T_k$ è ortogonalmente simile a $T_{k-1}$ dato che $T_k= Q_k^T T_{k-1} Q_k$ e $Q_k$ è una matrice ortogonale. Ripetendo i passaggi $T_k$ è ortogonalmente simile ad $A$. Nel caso in cui $A$ abbia **autovalori reali e distinti**, allora $T_k$ tende a diventare una matrice **triangolare superiore**. Nella formulazione più basilare si ha $Q_0 = I$ quindi $T_0 = A$ e la fattorizzazione è ottenuta tramite il metodo di ortogonalizzazione di Gram-Schmidt, quindi il costo di ogni passo è $n^3$. 
+Osserviamo che $T_k$ è ortogonalmente simile a $T_{k-1}$ dato che $T_k= Q_k^T T_{k-1} Q_k$ e $Q_k$ è una matrice ortogonale. Ripetendo i passaggi, si ha che $T_k$ è ortogonalmente simile ad $A$. Nel caso in cui $A$ abbia **autovalori reali e distinti**, allora $T_k$ tende a diventare una matrice **triangolare superiore**. Nella formulazione più basilare si ha $Q_0 = I$ quindi $T_0 = A$ e la fattorizzazione è ottenuta tramite il metodo di ortogonalizzazione di Gram-Schmidt, quindi il costo di ogni passo è $n^3$. 
 
 Anziché procedere come visto, possiamo utilizzare dei metodi che riducono la matrice iniziale ad una matrice di Hessemberg. Il costo di ogni passo per la fattorizzazione scende da $n^3$ ad $n^2$. Vedremo principalmente due metodi: Householder e Givens.
 
@@ -279,19 +289,19 @@ I & 0 \\
 0 & \tilde{P}
 \end{bmatrix}
 $$
-Per far corrispondere tutto, le dimensioni sono $I \in \R^{n-q}$ e $\tilde{P} \in \R^{q}$, che è l'effettivo operatore che effettua l'eliminazione degli elementi e la trasformazione $x_{n-q+1} \to \bar x_{n-q+1}$, e che prende il nome di **matrice di Householder**. Spieghiamo come costruire $\tilde{P}$ con un esempio. 
+Per far corrispondere tutto, le dimensioni sono $I \in \R^{n-q \times n-q}$ e $\tilde{P} \in \R^{q \times q}$, che è l'effettivo operatore che effettua l'eliminazione degli elementi e la trasformazione $x_{n-q+1} \to \bar x_{n-q+1}$, e che prende il nome di **matrice di Householder**. Spieghiamo come costruire $\tilde{P}$ con un esempio. 
 
 
 
 #### Esempio: Costruzione matrice di Householder
 
-Sia $x$ la porzione di interesse (da $n-1+1$ in poi) del vettore colonna da annullare:
+Sia $x$ la porzione di interesse (da $n-q+1$ in poi) del vettore colonna da annullare:
 $$
 x = \begin{bmatrix} 2 & -2 & 1 \end{bmatrix}^T
 $$
 La matrice di Householder vale:
 $$
-\tilde P = I - 2 \frac{v^Tv}{v^T v}
+\tilde P = I - 2 \frac{vv^T}{v^T v}
 $$
 Dove il vettore $v$, derivato da una lunga serie di calcoli, è definito come segue: 
 $$
@@ -429,5 +439,4 @@ p_1(\lambda) = \lambda - a_1 \\
 p_i(\lambda) = p_{i-1}(\lambda)(\lambda - a_i) - p_{i-2}(\lambda) c_{i-1}^2
 \end{cases}
 $$
-
 

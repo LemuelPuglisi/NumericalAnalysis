@@ -72,7 +72,7 @@ x_1 = \frac{a \cdot f(b) - b \cdot f(a)}{f(b)- f(a)}
 $$
 Si sostituisce $a$ o $b$ con $x_1$ a seconda se è $a$ o $b$ ad avere la $f$ con lo stesso segno di $f(x_1)$. In generale quindi si ha:
 $$
-x_{n+1} = \frac{x_{n+1} \cdot f(x_n) - x_n \cdot f(x_{n+1})}{f(x_{n}) - f(x_{n+1})}
+x_{n+1} = \frac{x_{n-1} \cdot f(x_n) - x_n \cdot f(x_{n-1})}{f(x_{n}) - f(x_{n-1})}
 $$
 Il rate di convergenza è lineare. 
 
