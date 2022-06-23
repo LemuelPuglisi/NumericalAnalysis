@@ -174,7 +174,7 @@ $$
 |    Regola     |                          Formula                           |                            Errore                            |
 | :-----------: | :--------------------------------------------------------: | :----------------------------------------------------------: |
 | Trapezi $Q_1$ |                $\frac{f(a) + f(b)}{2}(b-a)$                |           $E_T(f) = -\frac{f''(\eta)}{12}(b-a)^3$            |
-| Simpson $Q_2$ | $\frac {b-a}6 \big( f(a) + 4f(\frac{b-a}{2}) + f(b) \big)$ | $E_S (f) = - \frac{f^{(IV)}(\eta)}{2880}\left(b-a \right)^5$ |
+| Simpson $Q_2$ | $\frac {b-a}6 \big( f(a) + 4f(\frac{b+a}{2}) + f(b) \big)$ | $E_S (f) = - \frac{f^{(IV)}(\eta)}{2880}\left(b-a \right)^5$ |
 
 Per le formule di Newton-Cotes vale in generale:
 
@@ -263,7 +263,7 @@ Costruzione della **matrice di Householder** $\tilde P$
 💫 La sua grandezza varia in base alla colonna che si sta esaminando
 💫 La matrice prodotta è ortogonale e simmetrica 
 $$
-\tilde P = I - 2 \frac{v^Tv}{v^T v} 
+\tilde P = I - 2 \frac{vv^T}{v^T v} 
 \hspace{1cm} \text{dove} \hspace{1cm}
 v = x + \|x\|_2 \cdot e_1
 $$
