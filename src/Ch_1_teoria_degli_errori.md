@@ -259,9 +259,7 @@ Il primo problema è connesso con la dipendenza continua dai dati della soluzion
 
 **Def.** Sia $\delta d$ la perturbazione applicata ai dati, che scatena una variazione $\delta x$ nella soluzione, quindi $d + \delta d \to x + \delta x$. Diremo $K$ **numero di condizionamento relativo** il valore ottenuto come segue: 
 $$
-K = \frac
-{{\left\lVert \delta x \right\rVert} / {\left\lVert x \right\rVert}}
-{{\left\lVert \delta d \right\rVert} / {\left\lVert d \right\rVert}}
+K = \frac{\left\lVert \delta x \right\rVert / \left\lVert x \right\rVert}{\left\lVert \delta d \right\rVert / \left\lVert d \right\rVert}
 $$
  Se $x=0, d=0$ si calcola $K_{ass}$ il **numero di condizionamento assoluto**: 
 $$
