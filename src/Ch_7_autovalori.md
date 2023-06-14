@@ -1,8 +1,5 @@
 # 7. Autovalori
 
-[TOC]
-
-
 
 ## Definizione del problema
 

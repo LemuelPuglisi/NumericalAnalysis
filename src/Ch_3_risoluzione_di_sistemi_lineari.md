@@ -1,7 +1,5 @@
 # 3. Risoluzione di Sistemi Lineari
 
-[TOC]
-
 ## Definizione problema
 
 Sia $A \in \R^{m \times n}$ e $b \in \R^m$ vogliamo trovare un vettore $x\in\R^n$ che soddisfi l'equazione $Ax=b$. 

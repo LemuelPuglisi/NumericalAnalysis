@@ -2,10 +2,6 @@
 
 > Inserirò solo teoremi e definizioni non di base. 
 
-[TOC]
-
-
-
 ## Tipi di matrici
 
 Esploriamo alcune definizioni particolari. 
@@ -160,50 +156,50 @@ Dove $a$ e $b$ possono essere due norme distinte tra le sopracitate.
 
 > Credits: [Advanced LAFF, Robert van de Geijn](https://www.youtube.com/watch?v=2rIOWQY9rp4)
 
-Supponiamo di avere una trasformazione lineare $L: \C^n \to \C^m$ e supponiamo di voler misurare quanto il vettore $x \in \C^n$ venga magnificato dalla trasformazione. Per avere una sorta di magnitudo del vettore utilizziamo la norma vettoriale $\norm{x}$. Per capire il grado di magnificazione dato dalla trasformazione $L$ potremmo considerare il rapporto tra la norma del vettore di output $y = L(x)$ e quella del vettore di input, come segue: 
+Supponiamo di avere una trasformazione lineare $L: \C^n \to \C^m$ e supponiamo di voler misurare quanto il vettore $x \in \C^n$ venga magnificato dalla trasformazione. Per avere una sorta di magnitudo del vettore utilizziamo la norma vettoriale $||x||$. Per capire il grado di magnificazione dato dalla trasformazione $L$ potremmo considerare il rapporto tra la norma del vettore di output $y = L(x)$ e quella del vettore di input, come segue: 
 $$
-\frac{\norm{L(x)}}{\norm{x}}
+\frac{||L(x)||}{||x||}
 $$
 Supponiamo ancora che per descrivere $L$ vogliamo trovare $x$ che ci dia il massimo rapporto: 
 $$
-\sup_{x \ne 0} \frac{\norm{L(x)}}{\norm{x}}
+\sup_{x \ne 0} \frac{||L(x)||}{||x||}
 $$
 Abbiamo quindi una definizione della magnificazione data da $L$, quindi potremmo costruire la norma di $L$ basandoci su questo concetto: 
 $$
-\norm{L} = \sup_{x \ne 0} \frac{\norm{L(x)}}{\norm{x}}
+||L|| = \sup_{x \ne 0} \frac{||L(x)||}{||x||}
 $$
 Se abbiamo una matrice $A$ che definisce la trasformazione lineare $L$, ovvero $L(x)=Ax$, allora possiamo definire la norma matriciale di $A$ come: 
 $$
-\norm{A} = \sup_{x \ne 0} \frac{\norm{Ax}}{\norm{x}}
+||{A}|| = \sup_{x \ne 0} \frac{||{Ax}||}{||{x}||}
 $$
 La norma matriciale di $A$ si dice **indotta dalla norma vettoriale** utilizzata. Ritornando alla trasformazione, se effettuiamo prima lo scaling e dopodiché trasformiamo, il risultato non cambia. Questo vuol dire che le due seguenti espressioni sono equivalenti: 
 $$
-\norm{L} = \sup_{x \ne 0} \frac{\norm{L(x)}}{\norm{x}} = 
-\sup_{x \ne 0} \frac{\norm{L(\frac{x}{\norm{x}})}}{\norm{\frac{x}{\norm{x}}}} = 
-\sup_{x \ne 0} \frac{\norm{L(\frac{x}{\norm{x}})}}
-{ \frac{\norm{x} }{\norm{x}}}   
+||{L}|| = \sup_{x \ne 0} \frac{||{L(x)}||}{||{x}||} = 
+\sup_{x \ne 0} \frac{||{L(\frac{x}{||{x}||})}||}{||{\frac{x}{||{x}||}||}} = 
+\sup_{x \ne 0} \frac{||{L(\frac{x}{||{x}||})}||}
+{ \frac{||{x}|| }{||{x}||}}   
 = 
-\sup_{x \ne 0} \norm{L(\frac{x}{\norm{x}})}
+\sup_{x \ne 0} ||{L(\frac{x}{||{x}||})}||
 $$
-Ma $\frac{x}{\norm{x}}$ è un vettore unitario, quindi possiamo scrivere: 
+Ma $\frac{x}{||{x}||}$ è un vettore unitario, quindi possiamo scrivere: 
 $$
-\norm{L} = \sup_{\norm{x}=1} \norm{L(x)}
+||{L}|| = \sup_{||{x}||=1}||norm{L(x)}||
 $$
-L'insieme $\{x \mid \norm{x} = 1\}$ ha il massimo ed il minimo inclusi (compact set), quindi l'estremo superiore combacia con il massimo. 
+L'insieme $\{x \mid ||{x}|| = 1\}$ ha il massimo ed il minimo inclusi (compact set), quindi l'estremo superiore combacia con il massimo. 
 $$
-\norm{L} = \max_{\norm{x}=1} \norm{L(x)}
+||{L}|| = \max_{||{x}|| =1} ||{L(x)}||
 $$
 Possiamo effettuare esattamente gli stessi passaggi con la norma matriciale indotta, quindi: 
 $$
-\norm{A} = \max_{\norm{x} = 1} \norm{Ax}
+||{A}|| = \max_{||{x}|| = 1} ||{Ax}||
 $$
 Dalle norme vettoriali $1,2,\infty$ vengono indotte le omonime norme matriciali: 
 $$
 \begin{split}
 
-\norm{x}_1 = \sum_i \abs{x_i} & \to & \norm{A}_1 = \max_{1 \le j \le n} \sum_{i=1}^n |a_{ij}|\\
-\norm{x}_2 = \sqrt{\sum_i x_i^2} & \to & \norm{A}_2 = \sqrt{\rho(A^* A)} \\
-\norm{x}_{\infty} = \max_{i} \abs{x_i} & \to & \norm{A}_\infty =\max_{1 \le i \le n} \sum_{j=1}^n |a_{ij}|\\
+||{x}||_1 = \sum_i \abs{x_i} & \to & ||{A}||_1 = \max_{1 \le j \le n} \sum_{i=1}^n |a_{ij}|\\
+||{x}||_2 = \sqrt{\sum_i x_i^2} & \to & ||{A}||_2 = \sqrt{\rho(A^* A)} \\
+||{x}||_{\infty} = \max_{i} \abs{x_i} & \to & ||{A}||_\infty =\max_{1 \le i \le n} \sum_{j=1}^n |a_{ij}|\\
 
 \end{split}
 $$

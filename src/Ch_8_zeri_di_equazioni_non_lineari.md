@@ -1,7 +1,5 @@
 # 8. Zeri di equazioni non lineari
 
-[TOC]
-
 ## Definizione del problema
 
 Data $f: (a,b) \to \R$ si affronta il problema di determinare eventuali $\alpha \in (a,b)$ tali che $f(\alpha)=0$. Per evitare che l'algoritmo oscilli tra una soluzione e l'altra, si restringe la ricerca in sottointervalli in cui è presente un solo zero. Partendo da una guess iniziale, l'algoritmo iterativo genera una successione di soluzioni che (si spera) convergano alla soluzione reale.  I metodi possono essere chiusi (bracketing methods), ovvero si richiede un intervallo su cui cercare la soluzione, oppure aperti, che possono divergere ma sono generalmente più veloci. 

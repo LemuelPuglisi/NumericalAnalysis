@@ -1,6 +1,5 @@
 # 4. Interpolazione
 
-[TOC]
 
 ## Definizione del problema
 

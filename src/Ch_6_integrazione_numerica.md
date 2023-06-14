@@ -1,7 +1,5 @@
 # 6. Integrazione numerica
 
-[TOC]
-
 ## Definizione del problema
 
 Sia $f$ la funzione integranda (spesso non lineare, difficile da integrare) si vuole approssimare l'integrale definito in un intervallo $[a,b] \subset \R$ 

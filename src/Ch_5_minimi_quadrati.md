@@ -1,6 +1,5 @@
 # 5. Minimi quadrati
 
-[TOC]
 
 ## Definizione del problema
 
