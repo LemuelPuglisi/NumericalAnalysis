@@ -2,6 +2,39 @@
 
 > Inserirò solo teoremi e definizioni non di base. 
 
+## Traccia 
+
+La traccia di una matrice è definita solo per matrici quadrate ed è la somma degli elementi della diagonale principale.
+
+$$
+tr(A) = \sum_{i} a_{ii}
+$$
+
+### Proprietà sulla traccia
+
+**Prop 1**. Calcolare la traccia è una trasformazione lineare:
+
+$$
+tr(A + B) = tr(A) + tr(B) \hspace{1cm}
+tr(cA) = c \times tr(A)
+$$
+
+**Prop 2**. Una matrice e la sua trasposta hanno la stessa traccia
+
+$$
+tr(A) = tr(A^T)
+$$
+
+**Prop 3**. Data una matrice $A$ di dimensione $m \times n$ ed una matrice $B$ di dimensione $n \times m$ allora
+
+$$
+tr(AB) = tr(BA)
+$$
+
+**Prop 4**. La traccia è pari alla somma degli autovalori della matrice.
+
+[Vedi tutte le propietà](https://it.wikipedia.org/wiki/Traccia_(matrice)).
+
 ## Tipi di matrici
 
 Esploriamo alcune definizioni particolari. 
